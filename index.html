@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Ulang Tahun X-10</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-highlight: rgba(255, 255, 255, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: #020617;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 30px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Elegant Liquid Blobs */
+        .liquid-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: liquidMove 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .blob-1 { width: 50vw; height: 50vw; background: #0369a1; top: -10%; left: -10%; }
+        .blob-2 { width: 40vw; height: 40vw; background: #4c1d95; bottom: -10%; right: -10%; animation-delay: -5s; }
+        .blob-3 { width: 30vw; height: 30vw; background: #0f766e; top: 40%; left: 40%; animation-delay: -10s; opacity: 0.3; }
+
+        @keyframes liquidMove {
+            0% { transform: translate(0, 0) scale(1); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            33% { transform: translate(5%, 10%) scale(1.1); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            66% { transform: translate(-5%, 5%) scale(0.9); border-radius: 50% 50% 60% 40% / 40% 60% 50% 60%; }
+            100% { transform: translate(10%, -5%) scale(1.05); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-border-highlight);
+            border-left: 1px solid var(--glass-border-highlight);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #e2e8f0, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #current-time {
+            display: inline-block;
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Controls: Search & Sort */
+        .controls-container {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            animation: fadeIn 1.5s ease-out 0.2s backwards;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 15px;
+            flex-grow: 1;
+            max-width: 600px;
+        }
+
+        .glass-input {
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--glass-border-highlight);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-select {
+            padding: 14px 24px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            outline: none;
+            min-width: 180px;
+        }
+
+        /* Summary Widget */
+        .summary-widget {
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .summary-highlight {
+            color: var(--text-main);
+            font-weight: 600;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        /* Grid */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .student-card {
+            padding: 24px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Elegant Liquid Shine */
+        .student-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -150%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+            transform: skewX(-25deg);
+            transition: 0.7s ease;
+        }
+        .student-card:hover::after {
+            left: 200%;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 16px;
+        }
+
+        .name-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .no-badge {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: rgba(255,255,255,0.05);
+            width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+        }
+
+        .student-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            letter-spacing: 0.3px;
+        }
+
+        .zodiac-badge {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .info-value.highlight {
+            color: var(--accent);
+        }
+
+        .countdown-row {
+            background: rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .countdown-val {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .soon-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .today-badge {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: none;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        .missing-data {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls-container {
+                flex-direction: column;
+            }
+            .control-group {
+                flex-direction: column;
+                max-width: 100%;
+            }
+            .summary-widget {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="liquid-blob blob-1"></div>
+    <div class="liquid-blob blob-2"></div>
+    <div class="liquid-blob blob-3"></div>
+
+    <header>
+        <h1>Database Siswa X-10</h1>
+        <div id="current-time">Memuat waktu...</div>
+    </header>
+
+    <div class="controls-container">
+        <div class="control-group">
+            <input type="text" id="searchInput" class="glass-input" placeholder="Cari nama siswa..." onkeyup="renderCards()">
+            <select id="sortSelect" class="glass-select" onchange="renderCards()">
+                <option value="no">Urutkan: No. Absen</option>
+                <option value="nama">Urutkan: Nama (A-Z)</option>
+                <option value="terdekat">Urutkan: Ultah Terdekat</option>
+            </select>
+        </div>
+        <div class="summary-widget glass-panel">
+            Bulan ini: <span class="summary-highlight" id="month-summary">0 Ulang Tahun</span>
+        </div>
+    </div>
+
+    <div class="container" id="cards-container">
+        <!-- Cards injected via JS -->
+    </div>
+
+    <script>
+        const dataSiswa = [
+            { no: 1, nama: "akmal", dob: "2010-06-08" },
+            { no: 2, nama: "ali topan", dob: "2010-09-18" },
+            { no: 3, nama: "alinda", dob: "2010-10-02" },
+            { no: 4, nama: "anggra", dob: null },
+            { no: 5, nama: "ayu", dob: "2011-03-05" },
+            { no: 6, nama: "citra", dob: "2010-09-28" },
+            { no: 7, nama: "dilla", dob: "2010-11-15" },
+            { no: 8, nama: "dinda", dob: "2011-03-06" },
+            { no: 9, nama: "diny", dob: null },
+            { no: 10, nama: "fatir", dob: "2010-03-21" },
+            { no: 11, nama: "fauziah", dob: "2011-05-02" },
+            { no: 12, nama: "fika", dob: null },
+            { no: 13, nama: "kaira", dob: "2011-06-06" },
+            { no: 14, nama: "keysa", dob: "2011-04-27" },
+            { no: 15, nama: "keysia", dob: "2010-06-19" },
+            { no: 16, nama: "kezzia", dob: null },
+            { no: 17, nama: "laiqa", dob: "2011-05-05" },
+            { no: 18, nama: "ripal", dob: "2011-05-24" },
+            { no: 19, nama: "maulana", dob: null },
+            { no: 20, nama: "meicca", dob: "2010-11-02" },
+            { no: 21, nama: "ilham", dob: "2010-03-22" },
+            { no: 22, nama: "chairil", dob: null },
+            { no: 23, nama: "irham", dob: "2010-12-21" },
+            { no: 24, nama: "nazril", dob: null },
+            { no: 25, nama: "najwa", dob: null },
+            { no: 26, nama: "desta", dob: "2010-05-24" },
+            { no: 27, nama: "putri", dob: "2011-02-03" },
+            { no: 28, nama: "rezka", dob: "2010-09-05" },
+            { no: 29, nama: "rizki M", dob: "2010-04-29" },
+            { no: 30, nama: "rizky N", dob: "2011-04-28" },
+            { no: 31, nama: "salfa", dob: "2010-10-06" },
+            { no: 32, nama: "sena", dob: "2010-12-02" },
+            { no: 33, nama: "sesi", dob: "2010-09-30" },
+            { no: 34, nama: "widi", dob: null },
+            { no: 35, nama: "willi", dob: "2010-08-06" }
+        ];
+
+        function getZodiac(dateString) {
+            if(!dateString) return null;
+            const d = new Date(dateString);
+            const day = d.getDate();
+            const month = d.getMonth() + 1;
+
+            if ((month == 1 && day <= 19) || (month == 12 && day >= 22)) return { name: "Capricorn", emoji: "♑" };
+            if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return { name: "Aquarius", emoji: "♒" };
+            if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return { name: "Pisces", emoji: "♓" };
+            if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return { name: "Aries", emoji: "♈" };
+            if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return { name: "Taurus", emoji: "♉" };
+            if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return { name: "Gemini", emoji: "♊" };
+            if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return { name: "Cancer", emoji: "♋" };
+            if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return { name: "Leo", emoji: "♌" };
+            if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return { name: "Virgo", emoji: "♍" };
+            if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return { name: "Libra", emoji: "♎" };
+            if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) return { name: "Scorpio", emoji: "♏" };
+            if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) return { name: "Sagittarius", emoji: "♐" };
+            return null;
+        }
+
+        function formatDate(dateString) {
+            const options = { day: '2-digit', month: 'long', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        function calculateAgeStats(dobString, today) {
+            if (!dobString) return null;
+            
+            const dob = new Date(dobString);
+            let years = today.getFullYear() - dob.getFullYear();
+            let months = today.getMonth() - dob.getMonth();
+            let days = today.getDate() - dob.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            let nextBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            
+            if (todayDateOnly.getTime() > nextBday.getTime()) {
+                nextBday.setFullYear(today.getFullYear() + 1);
+            }
+            
+            const diffBdayTime = nextBday.getTime() - todayDateOnly.getTime();
+            const daysToNextBday = Math.ceil(diffBdayTime / (1000 * 60 * 60 * 24));
+
+            return { years, months, days, daysToNextBday };
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+            
+            const today = new Date();
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            // Update Summary
+            let currentMonthCount = 0;
+            const currentMonth = today.getMonth();
+
+            // Prepare Data
+            let displayData = dataSiswa.map(person => {
+                const stats = calculateAgeStats(person.dob, today);
+                const zodiak = getZodiac(person.dob);
+                
+                if(person.dob) {
+                    const dobDate = new Date(person.dob);
+                    if(dobDate.getMonth() === currentMonth) currentMonthCount++;
+                }
+
+                return { ...person, stats, zodiak };
+            });
+
+            document.getElementById('month-summary').innerText = `${currentMonthCount} Orang`;
+
+            // Filter Data
+            if(searchQuery) {
+                displayData = displayData.filter(p => p.nama.toLowerCase().includes(searchQuery));
+            }
+
+            // Sort Data
+            displayData.sort((a, b) => {
+                if(sortBy === 'nama') return a.nama.localeCompare(b.nama);
+                if(sortBy === 'terdekat') {
+                    if(!a.stats) return 1;
+                    if(!b.stats) return -1;
+                    return a.stats.daysToNextBday - b.stats.daysToNextBday;
+                }
+                return a.no - b.no; // Default sort by no
+            });
+
+            // Render
+            displayData.forEach((person, index) => {
+                const card = document.createElement('div');
+                card.className = 'student-card glass-panel';
+                card.style.animation = `fadeIn 0.5s ease-out ${index * 0.05}s backwards`;
+                
+                let contentHTML = '';
+
+                if (person.stats) {
+                    let bdayBadge = '';
+                    if (person.stats.daysToNextBday === 0) {
+                        bdayBadge = '<span class="today-badge">🎉 HARI INI!</span>';
+                    } else if (person.stats.daysToNextBday <= 30) {
+                        bdayBadge = '<span class="soon-badge">Sebentar Lagi</span>';
+                    }
+
+                    contentHTML = `
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Tgl Lahir</span>
+                                <span class="info-value">${formatDate(person.dob)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Usia</span>
+                                <span class="info-value highlight">${person.stats.years} Thn, ${person.stats.months} Bln</span>
+                            </div>
+                        </div>
+                        <div class="countdown-row">
+                            <div class="info-item">
+                                <span class="info-label">Ultah Berikutnya</span>
+                                <span class="countdown-val">${person.stats.daysToNextBday} Hari lagi</span>
+                            </div>
+                            ${bdayBadge}
+                        </div>
+                    `;
+                } else {
+                    contentHTML = `
+                        <div class="missing-data">
+                            Data tanggal lahir belum tersedia
+                        </div>
+                    `;
+                }
+
+                const zodiakHTML = person.zodiac ? `<div class="zodiac-badge">${person.zodiak.emoji} ${person.zodiak.name}</div>` : '';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="name-wrapper">
+                            <span class="no-badge">${person.no}</span>
+                            <span class="student-name">${person.nama}</span>
+                        </div>
+                        ${person.zodiak ? `<div class="zodiac-badge" title="Zodiak">${person.zodiak.emoji} ${person.zodiak.name}</div>` : ''}
+                    </div>
+                    ${contentHTML}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
+            document.getElementById('current-time').innerText = now.toLocaleDateString('id-ID', options).replace(/\./g, ':');
+        }
+
+        // Init
+        renderCards();
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
