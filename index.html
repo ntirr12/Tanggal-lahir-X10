@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoring Ulang Tahun X-10</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Cdn untuk efek Confetti 🎉 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.03);
@@ -14,6 +16,9 @@
             --text-muted: #94a3b8;
             --accent: #38bdf8;
             --accent-glow: rgba(56, 189, 248, 0.4);
+            --gold: #fbbf24;
+            --green: #34d399;
+            --pink: #f472b6;
         }
 
         * {
@@ -32,171 +37,183 @@
             position: relative;
         }
 
-        /* Elegant Liquid Blobs */
+        /* Latar Belakang Cepat & Ringan (Tanpa Blur) */
         .liquid-blob {
             position: fixed;
             border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.4;
+            opacity: 0.15; 
             z-index: -1;
-            animation: liquidMove 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+            animation: liquidMove 30s infinite alternate linear;
         }
-        .blob-1 { width: 50vw; height: 50vw; background: #0369a1; top: -10%; left: -10%; }
-        .blob-2 { width: 40vw; height: 40vw; background: #4c1d95; bottom: -10%; right: -10%; animation-delay: -5s; }
-        .blob-3 { width: 30vw; height: 30vw; background: #0f766e; top: 40%; left: 40%; animation-delay: -10s; opacity: 0.3; }
-
+        .blob-1 { width: 50vw; height: 50vw; background: #0ea5e9; top: -10%; left: -10%; }
+        .blob-2 { width: 40vw; height: 40vw; background: #8b5cf6; bottom: -10%; right: -10%; animation-delay: -5s; }
+        
         @keyframes liquidMove {
-            0% { transform: translate(0, 0) scale(1); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
-            33% { transform: translate(5%, 10%) scale(1.1); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
-            66% { transform: translate(-5%, 5%) scale(0.9); border-radius: 50% 50% 60% 40% / 40% 60% 50% 60%; }
-            100% { transform: translate(10%, -5%) scale(1.05); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 10%) scale(1.1); }
         }
 
-        /* Glassmorphism Utilities */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--glass-border);
             border-top: 1px solid var(--glass-border-highlight);
             border-left: 1px solid var(--glass-border-highlight);
             border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
         header {
             text-align: center;
-            margin-bottom: 40px;
-            animation: fadeIn 1.5s ease-out;
+            margin-bottom: 30px;
         }
 
         h1 {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.2rem;
+            font-weight: 800;
             letter-spacing: 1px;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #e2e8f0, #94a3b8);
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         #current-time {
             display: inline-block;
-            font-size: 0.9rem;
-            color: var(--accent);
+            font-size: 0.95rem;
+            color: var(--text-muted);
             font-weight: 500;
             letter-spacing: 0.5px;
+            background: rgba(255,255,255,0.05);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
         }
+
+        /* --- DASHBOARD STATISTIK KELAS --- */
+        .dashboard-stats {
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-transform: capitalize;
+        }
+        .stat-value.highlight { color: var(--accent); }
 
         /* Controls: Search & Sort */
         .controls-container {
             max-width: 1200px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 24px auto;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
-            justify-content: space-between;
-            animation: fadeIn 1.5s ease-out 0.2s backwards;
-        }
-
-        .control-group {
-            display: flex;
-            gap: 15px;
-            flex-grow: 1;
-            max-width: 600px;
         }
 
         .glass-input {
-            width: 100%;
+            flex-grow: 1;
             padding: 14px 24px;
-            border-radius: 20px;
+            border-radius: 16px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
             font-size: 0.95rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
             outline: none;
+            min-width: 200px;
         }
         
         .glass-input:focus {
             background: rgba(255, 255, 255, 0.06);
             border-color: var(--glass-border-highlight);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
         }
 
         .glass-select {
             padding: 14px 24px;
-            border-radius: 20px;
-            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            background: #0f172a;
             border: 1px solid var(--glass-border);
             color: var(--text-main);
             font-size: 0.95rem;
-            backdrop-filter: blur(10px);
             cursor: pointer;
             outline: none;
-            min-width: 180px;
-        }
-
-        /* Summary Widget */
-        .summary-widget {
-            padding: 14px 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        .summary-highlight {
-            color: var(--text-main);
-            font-weight: 600;
-            background: rgba(255,255,255,0.1);
-            padding: 4px 10px;
-            border-radius: 12px;
+            min-width: 220px;
         }
 
         /* Grid */
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .student-card {
             padding: 24px;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            border-radius: 20px;
         }
 
-        .student-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.06);
+        /* Efek Khusus Untuk yang Ulang Tahun Hari Ini */
+        .card-bday-today {
+            background: linear-gradient(145deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.08));
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            border-top: 1px solid rgba(245, 158, 11, 0.7);
+            border-left: 1px solid rgba(245, 158, 11, 0.7);
+            animation: pulse-glow 2s infinite alternate;
         }
 
-        /* Elegant Liquid Shine */
-        .student-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -150%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
-            transform: skewX(-25deg);
-            transition: 0.7s ease;
-        }
-        .student-card:hover::after {
-            left: 200%;
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+            to { box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px dashed var(--glass-border-highlight);
             padding-bottom: 16px;
         }
 
@@ -208,31 +225,39 @@
 
         .no-badge {
             font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            background: rgba(255,255,255,0.05);
-            width: 28px; height: 28px;
+            color: var(--text-main);
+            font-weight: 700;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            width: 30px; height: 30px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         .student-name {
-            font-size: 1.15rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-weight: 700;
             text-transform: capitalize;
             letter-spacing: 0.3px;
         }
+        
+        .badges-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
 
-        .zodiac-badge {
-            font-size: 0.8rem;
-            padding: 4px 10px;
+        .zodiac-badge, .shio-badge {
+            font-size: 0.7rem;
+            padding: 3px 8px;
             border-radius: 20px;
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             color: var(--text-muted);
+            font-weight: 500;
         }
 
         .info-grid {
@@ -252,52 +277,71 @@
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .info-value {
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .info-value.highlight {
             color: var(--accent);
         }
 
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
         .countdown-row {
-            background: rgba(0,0,0,0.2);
-            padding: 12px 16px;
-            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 14px 16px;
+            border-radius: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
+            border: 1px solid rgba(255,255,255,0.02);
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .countdown-val {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-main);
         }
 
         .soon-badge {
-            background: rgba(16, 185, 129, 0.2);
-            color: #34d399;
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--green);
             padding: 4px 10px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 0.75rem;
-            font-weight: 600;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 700;
+            border: 1px solid rgba(52, 211, 153, 0.3);
         }
 
         .today-badge {
             background: linear-gradient(135deg, #f59e0b, #ef4444);
             color: white;
-            padding: 6px 12px;
-            border-radius: 12px;
+            padding: 6px 14px;
+            border-radius: 10px;
             font-size: 0.8rem;
-            font-weight: 700;
+            font-weight: 800;
             border: none;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-            animation: pulse 2s infinite;
+            letter-spacing: 0.5px;
         }
 
         .missing-data {
@@ -306,31 +350,13 @@
             font-size: 0.9rem;
             text-align: center;
             padding: 20px 0;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .controls-container {
-                flex-direction: column;
-            }
-            .control-group {
-                flex-direction: column;
-                max-width: 100%;
-            }
-            .summary-widget {
-                justify-content: center;
-            }
+            .controls-container { flex-direction: column; }
+            .glass-select { width: 100%; }
         }
     </style>
 </head>
@@ -338,25 +364,54 @@
 
     <div class="liquid-blob blob-1"></div>
     <div class="liquid-blob blob-2"></div>
-    <div class="liquid-blob blob-3"></div>
 
     <header>
-        <h1>Database Siswa X-10</h1>
+        <h1>ULTAH X-10 🥳</h1>
         <div id="current-time">Memuat waktu...</div>
     </header>
 
+    <!-- Dashboard Statistik Kelas -->
+    <div class="dashboard-stats" id="dashboard-stats">
+        <div class="stat-box glass-panel">
+            <div class="stat-icon">🎂</div>
+            <div class="stat-info">
+                <span class="stat-title">Bulan Ini</span>
+                <span class="stat-value highlight" id="stat-bulan-ini">0 Orang</span>
+            </div>
+        </div>
+        <div class="stat-box glass-panel">
+            <div class="stat-icon">👑</div>
+            <div class="stat-info">
+                <span class="stat-title">Paling Tua (Sesepuh)</span>
+                <span class="stat-value" id="stat-tertua">-</span>
+            </div>
+        </div>
+        <div class="stat-box glass-panel">
+            <div class="stat-icon">👶</div>
+            <div class="stat-info">
+                <span class="stat-title">Paling Muda (Bocil)</span>
+                <span class="stat-value" id="stat-termuda">-</span>
+            </div>
+        </div>
+        <div class="stat-box glass-panel">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+                <span class="stat-title">Rata-Rata Umur</span>
+                <span class="stat-value" id="stat-ratarata">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controls -->
     <div class="controls-container">
-        <div class="control-group">
-            <input type="text" id="searchInput" class="glass-input" placeholder="Cari nama siswa..." onkeyup="renderCards()">
-            <select id="sortSelect" class="glass-select" onchange="renderCards()">
-                <option value="no">Urutkan: No. Absen</option>
-                <option value="nama">Urutkan: Nama (A-Z)</option>
-                <option value="terdekat">Urutkan: Ultah Terdekat</option>
-            </select>
-        </div>
-        <div class="summary-widget glass-panel">
-            Bulan ini: <span class="summary-highlight" id="month-summary">0 Ulang Tahun</span>
-        </div>
+        <input type="text" id="searchInput" class="glass-input" placeholder="🔍 Cari nama temanmu..." onkeyup="renderCards()">
+        <select id="sortSelect" class="glass-select" onchange="renderCards()">
+            <option value="no">🔢 Urutkan: No. Absen (Default)</option>
+            <option value="terdekat">🎯 Urutkan: Paling Dekat Ultah</option>
+            <option value="nama">🔤 Urutkan: Nama (A-Z)</option>
+            <option value="umur_tua">👴 Urutkan: Umur (Tua ke Muda)</option>
+            <option value="umur_muda">👶 Urutkan: Umur (Muda ke Tua)</option>
+        </select>
     </div>
 
     <div class="container" id="cards-container">
@@ -364,6 +419,13 @@
     </div>
 
     <script>
+        // Mendapatkan tanggal hari ini
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
+        const currentDayStr = String(today.getDate()).padStart(2, '0');
+        
+        // Data Siswa - UPDATE Diny's DOB ke Hari Ini Tahun 2011
         const dataSiswa = [
             { no: 1, nama: "akmal", dob: "2010-06-08" },
             { no: 2, nama: "ali topan", dob: "2010-09-18" },
@@ -373,7 +435,7 @@
             { no: 6, nama: "citra", dob: "2010-09-28" },
             { no: 7, nama: "dilla", dob: "2010-11-15" },
             { no: 8, nama: "dinda", dob: "2011-03-06" },
-            { no: 9, nama: "diny", dob: null },
+            { no: 9, nama: "diny", dob: "2010-08-22" },
             { no: 10, nama: "fatir", dob: "2010-03-21" },
             { no: 11, nama: "fauziah", dob: "2011-05-02" },
             { no: 12, nama: "fika", dob: null },
@@ -423,22 +485,33 @@
             return null;
         }
 
+        function getShio(year) {
+            if(!year) return null;
+            const shioList = [
+                { name: "Tikus", emoji: "🐀" }, { name: "Kerbau", emoji: "🐂" }, { name: "Macan", emoji: "🐅" },
+                { name: "Kelinci", emoji: "🐇" }, { name: "Naga", emoji: "🐉" }, { name: "Ular", emoji: "🐍" },
+                { name: "Kuda", emoji: "🐎" }, { name: "Kambing", emoji: "🐐" }, { name: "Monyet", emoji: "🐒" },
+                { name: "Ayam", emoji: "🐓" }, { name: "Anjing", emoji: "🐕" }, { name: "Babi", emoji: "🐖" }
+            ];
+            return shioList[(year - 4) % 12];
+        }
+
         function formatDate(dateString) {
             const options = { day: '2-digit', month: 'long', year: 'numeric' };
             return new Date(dateString).toLocaleDateString('id-ID', options);
         }
 
-        function calculateAgeStats(dobString, today) {
+        function calculateAgeStats(dobString, todayDate) {
             if (!dobString) return null;
             
             const dob = new Date(dobString);
-            let years = today.getFullYear() - dob.getFullYear();
-            let months = today.getMonth() - dob.getMonth();
-            let days = today.getDate() - dob.getDate();
+            let years = todayDate.getFullYear() - dob.getFullYear();
+            let months = todayDate.getMonth() - dob.getMonth();
+            let days = todayDate.getDate() - dob.getDate();
 
             if (days < 0) {
                 months--;
-                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                const prevMonth = new Date(todayDate.getFullYear(), todayDate.getMonth(), 0);
                 days += prevMonth.getDate();
             }
             if (months < 0) {
@@ -446,67 +519,120 @@
                 months += 12;
             }
 
-            let nextBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
-            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            let nextBday = new Date(todayDate.getFullYear(), dob.getMonth(), dob.getDate());
+            const todayDateOnly = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate());
             
             if (todayDateOnly.getTime() > nextBday.getTime()) {
-                nextBday.setFullYear(today.getFullYear() + 1);
+                nextBday.setFullYear(todayDate.getFullYear() + 1);
             }
             
             const diffBdayTime = nextBday.getTime() - todayDateOnly.getTime();
             const daysToNextBday = Math.ceil(diffBdayTime / (1000 * 60 * 60 * 24));
+            
+            // Hitung persentase progress menuju ultah (asumsi 365 hari/tahun)
+            const progress = Math.max(0, Math.min(100, ((365 - daysToNextBday) / 365) * 100));
 
-            return { years, months, days, daysToNextBday };
+            return { years, months, days, daysToNextBday, progress, yearOfBirth: dob.getFullYear() };
         }
+
+        function updateClassDashboard(todayDate) {
+            let currentMonthCount = 0;
+            const currentMonth = todayDate.getMonth();
+            
+            const validStudents = dataSiswa.filter(s => s.dob);
+            if (validStudents.length === 0) return;
+
+            let oldest = validStudents[0];
+            let youngest = validStudents[0];
+            let totalAgeInMs = 0;
+            const todayMs = todayDate.getTime();
+
+            validStudents.forEach(s => {
+                const bdayDate = new Date(s.dob);
+                const bdayMs = bdayDate.getTime();
+                
+                if(bdayDate.getMonth() === currentMonth) currentMonthCount++;
+
+                if (bdayMs < new Date(oldest.dob).getTime()) oldest = s;
+                if (bdayMs > new Date(youngest.dob).getTime()) youngest = s;
+
+                totalAgeInMs += (todayMs - bdayMs);
+            });
+
+            const avgAgeInMs = totalAgeInMs / validStudents.length;
+            const avgYears = Math.floor(avgAgeInMs / (1000 * 60 * 60 * 24 * 365.25));
+            const avgMonths = Math.floor((avgAgeInMs % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
+
+            document.getElementById('stat-bulan-ini').innerText = `${currentMonthCount} Orang`;
+            document.getElementById('stat-tertua').innerHTML = `${oldest.nama} <span style="font-size:0.75rem; color:#94a3b8">(${oldest.dob.substring(0,4)})</span>`;
+            document.getElementById('stat-termuda').innerHTML = `${youngest.nama} <span style="font-size:0.75rem; color:#94a3b8">(${youngest.dob.substring(0,4)})</span>`;
+            document.getElementById('stat-ratarata').innerText = `${avgYears} Thn ${avgMonths} Bln`;
+        }
+
+        let confettiFired = false;
 
         function renderCards() {
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
             
-            const today = new Date();
+            const todayDate = new Date();
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
 
-            // Update Summary
-            let currentMonthCount = 0;
-            const currentMonth = today.getMonth();
-
-            // Prepare Data
             let displayData = dataSiswa.map(person => {
-                const stats = calculateAgeStats(person.dob, today);
+                const stats = calculateAgeStats(person.dob, todayDate);
                 const zodiak = getZodiac(person.dob);
-                
-                if(person.dob) {
-                    const dobDate = new Date(person.dob);
-                    if(dobDate.getMonth() === currentMonth) currentMonthCount++;
-                }
-
-                return { ...person, stats, zodiak };
+                const shio = stats ? getShio(stats.yearOfBirth) : null;
+                const isToday = stats && stats.daysToNextBday === 0;
+                return { ...person, stats, zodiak, shio, isToday };
             });
 
-            document.getElementById('month-summary').innerText = `${currentMonthCount} Orang`;
+            // Trigger Confetti jika ada yang ultah hari ini (hanya sekali)
+            const hasBdayToday = displayData.some(p => p.isToday);
+            if(hasBdayToday && !confettiFired) {
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 },
+                        colors: ['#38bdf8', '#fbbf24', '#f472b6', '#34d399']
+                    });
+                }, 500);
+                confettiFired = true;
+            }
 
-            // Filter Data
             if(searchQuery) {
                 displayData = displayData.filter(p => p.nama.toLowerCase().includes(searchQuery));
             }
 
-            // Sort Data
             displayData.sort((a, b) => {
+                if (a.isToday && !b.isToday) return -1;
+                if (!a.isToday && b.isToday) return 1;
+
                 if(sortBy === 'nama') return a.nama.localeCompare(b.nama);
                 if(sortBy === 'terdekat') {
                     if(!a.stats) return 1;
                     if(!b.stats) return -1;
                     return a.stats.daysToNextBday - b.stats.daysToNextBday;
                 }
-                return a.no - b.no; // Default sort by no
+                if(sortBy === 'umur_tua') {
+                    if(!a.dob) return 1;
+                    if(!b.dob) return -1;
+                    return new Date(a.dob).getTime() - new Date(b.dob).getTime();
+                }
+                if(sortBy === 'umur_muda') {
+                    if(!a.dob) return 1;
+                    if(!b.dob) return -1;
+                    return new Date(b.dob).getTime() - new Date(a.dob).getTime();
+                }
+                return a.no - b.no; // Default (No. Absen)
             });
 
-            // Render
-            displayData.forEach((person, index) => {
+            const fragment = document.createDocumentFragment();
+
+            displayData.forEach((person) => {
                 const card = document.createElement('div');
-                card.className = 'student-card glass-panel';
-                card.style.animation = `fadeIn 0.5s ease-out ${index * 0.05}s backwards`;
+                card.className = `student-card glass-panel ${person.isToday ? 'card-bday-today' : ''}`;
                 
                 let contentHTML = '';
 
@@ -515,7 +641,17 @@
                     if (person.stats.daysToNextBday === 0) {
                         bdayBadge = '<span class="today-badge">🎉 HARI INI!</span>';
                     } else if (person.stats.daysToNextBday <= 30) {
-                        bdayBadge = '<span class="soon-badge">Sebentar Lagi</span>';
+                        bdayBadge = '<span class="soon-badge">⏳ Sebentar Lagi</span>';
+                    }
+
+                    // Tambahan Fitur: Sweet 17/KTP Indicator
+                    let nextAge = person.stats.years + 1;
+                    if(person.stats.daysToNextBday === 0) nextAge = person.stats.years; 
+                    let milestone = '';
+                    if (nextAge === 17 && person.stats.daysToNextBday !== 0) {
+                        milestone = ' <span style="color:#f472b6; font-size:0.75rem;">(Sweet 17 🪪)</span>';
+                    } else if (person.stats.years === 17 && person.stats.daysToNextBday === 0) {
+                        milestone = ' <span style="color:#f472b6; font-size:0.75rem;">(Sudah Punya KTP! 🪪)</span>';
                     }
 
                     contentHTML = `
@@ -525,27 +661,39 @@
                                 <span class="info-value">${formatDate(person.dob)}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">Usia</span>
+                                <span class="info-label">Usia Sekarang</span>
                                 <span class="info-value highlight">${person.stats.years} Thn, ${person.stats.months} Bln</span>
                             </div>
                         </div>
                         <div class="countdown-row">
-                            <div class="info-item">
-                                <span class="info-label">Ultah Berikutnya</span>
-                                <span class="countdown-val">${person.stats.daysToNextBday} Hari lagi</span>
+                            <div style="flex-grow:1;">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
+                                    <div class="info-item" style="gap:2px;">
+                                        <span class="info-label">Ultah Ke-${nextAge}${milestone}</span>
+                                        <span class="countdown-val">${person.stats.daysToNextBday} Hari lagi</span>
+                                    </div>
+                                    ${bdayBadge}
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: ${person.stats.progress}%"></div>
+                                </div>
                             </div>
-                            ${bdayBadge}
                         </div>
                     `;
                 } else {
                     contentHTML = `
                         <div class="missing-data">
-                            Data tanggal lahir belum tersedia
+                            ⚠️ Data tanggal lahir belum tersedia
                         </div>
                     `;
                 }
 
-                const zodiakHTML = person.zodiac ? `<div class="zodiac-badge">${person.zodiak.emoji} ${person.zodiak.name}</div>` : '';
+                const badgesHTML = person.zodiak ? `
+                    <div class="badges-wrapper">
+                        <div class="zodiac-badge" title="Zodiak Bintang">${person.zodiak.emoji} ${person.zodiak.name}</div>
+                        ${person.shio ? `<div class="shio-badge" title="Shio (Chinese Zodiac)">${person.shio.emoji} Shio ${person.shio.name}</div>` : ''}
+                    </div>
+                ` : '';
 
                 card.innerHTML = `
                     <div class="card-header">
@@ -553,21 +701,29 @@
                             <span class="no-badge">${person.no}</span>
                             <span class="student-name">${person.nama}</span>
                         </div>
-                        ${person.zodiak ? `<div class="zodiac-badge" title="Zodiak">${person.zodiak.emoji} ${person.zodiak.name}</div>` : ''}
+                        ${badgesHTML}
                     </div>
                     ${contentHTML}
                 `;
-                container.appendChild(card);
+                fragment.appendChild(card);
             });
+            
+            container.appendChild(fragment);
         }
 
+        let lastMinute = -1;
         function updateClock() {
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
-            document.getElementById('current-time').innerText = now.toLocaleDateString('id-ID', options).replace(/\./g, ':');
+            if (now.getMinutes() !== lastMinute) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
+                document.getElementById('current-time').innerText = now.toLocaleDateString('id-ID', options).replace(/\./g, ':');
+                lastMinute = now.getMinutes();
+            }
         }
 
         // Init
+        document.getElementById('sortSelect').value = 'no'; 
+        updateClassDashboard(today);
         renderCards();
         updateClock();
         setInterval(updateClock, 1000);
