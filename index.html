@@ -3,22 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring Ulang Tahun X-10</title>
+    <title>Dashboard Ultah X-10 OMEGA-PRO</title>
+    <!-- Font Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Cdn untuk efek Confetti 🎉 -->
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Confetti JS -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
         :root {
+            --bg-base: #020617;
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-border-highlight: rgba(255, 255, 255, 0.2);
+            --glass-border-highlight: rgba(255, 255, 255, 0.15);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.4);
-            --gold: #fbbf24;
             --green: #34d399;
             --pink: #f472b6;
+            --orange: #f59e0b;
+            --purple: #a855f7;
         }
 
         * {
@@ -29,28 +34,24 @@
         }
 
         body {
-            background-color: #020617;
+            background-color: var(--bg-base);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 40px 0 50px 0;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Latar Belakang Cepat & Ringan (Tanpa Blur) */
-        .liquid-blob {
+        /* Latar Belakang Maximum (Optimized) */
+        .bg-glow {
             position: fixed;
-            border-radius: 50%;
-            opacity: 0.15; 
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
             z-index: -1;
-            animation: liquidMove 30s infinite alternate linear;
-        }
-        .blob-1 { width: 50vw; height: 50vw; background: #0ea5e9; top: -10%; left: -10%; }
-        .blob-2 { width: 40vw; height: 40vw; background: #8b5cf6; bottom: -10%; right: -10%; animation-delay: -5s; }
-        
-        @keyframes liquidMove {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(5%, 10%) scale(1.1); }
+            pointer-events: none;
+            will-change: background;
         }
 
         .glass-panel {
@@ -58,374 +59,329 @@
             border: 1px solid var(--glass-border);
             border-top: 1px solid var(--glass-border-highlight);
             border-left: 1px solid var(--glass-border-highlight);
-            border-radius: 24px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        /* Header */
+        .header-content { text-align: center; padding: 0 20px; margin-bottom: 30px; }
 
         h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
+            font-size: 2.5rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 12px;
             background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: inline-flex; align-items: center; gap: 12px;
         }
 
         #current-time {
-            display: inline-block;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            background: rgba(255,255,255,0.05);
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
+            display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem;
+            color: var(--text-muted); font-weight: 600; background: rgba(255,255,255,0.03);
+            padding: 10px 24px; border-radius: 30px; border: 1px solid var(--glass-border);
+            margin: 0 auto; 
         }
 
-        /* --- DASHBOARD STATISTIK KELAS --- */
+        #current-time i { color: var(--accent); }
+
+        /* Spotlight Bintang Utama */
+        .spotlight-container {
+            max-width: 1200px; margin: 0 auto 30px auto; padding: 0 20px;
+            display: none; 
+        }
+        
+        .spotlight-card {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 24px; padding: 24px; display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 20px; position: relative; overflow: hidden;
+            transform: translateZ(0); /* Hardware Acceleration */
+        }
+
+        .spotlight-card::before {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotateGlow 15s linear infinite; pointer-events: none;
+            will-change: transform;
+        }
+
+        @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
+
+        .spotlight-info { display: flex; flex-direction: column; gap: 8px; z-index: 1; }
+        .spotlight-label { font-size: 0.85rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; gap: 8px; align-items: center; }
+        .spotlight-name { font-size: 1.8rem; font-weight: 800; color: white; text-transform: capitalize; }
+        .spotlight-desc { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
+        
+        /* Dashboard Stats */
         .dashboard-stats {
-            max-width: 1200px;
-            margin: 0 auto 30px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
+            max-width: 1200px; margin: 0 auto 30px auto; display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; padding: 0 20px;
         }
 
         .stat-box {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
+            display: flex; align-items: center; gap: 14px; padding: 16px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+            transform: translateZ(0);
+        }
+
+        .stat-box:hover {
+            background: rgba(255, 255, 255, 0.05); border-color: var(--glass-border-highlight);
         }
 
         .stat-icon {
-            font-size: 1.8rem;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.05);
-            border-radius: 14px;
-            border: 1px solid var(--glass-border);
+            font-size: 1.4rem; width: 44px; height: 44px; display: flex; flex-shrink: 0;
+            align-items: center; justify-content: center; background: rgba(255,255,255,0.03);
+            border-radius: 12px; border: 1px solid var(--glass-border); color: var(--accent);
         }
 
-        .stat-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+        .stat-icon.pink { color: var(--pink); } .stat-icon.orange { color: var(--orange); }
+        .stat-icon.green { color: var(--green); } .stat-icon.gold { color: #fbbf24; }
+        .stat-icon.red { color: #ef4444; }
 
-        .stat-title {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-transform: capitalize;
-        }
+        .stat-info { display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .stat-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; white-space: nowrap; }
+        .stat-value { font-size: 1.05rem; font-weight: 800; color: var(--text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
         .stat-value.highlight { color: var(--accent); }
 
-        /* Controls: Search & Sort */
+        /* Controls */
         .controls-container {
-            max-width: 1200px;
-            margin: 0 auto 24px auto;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            max-width: 1200px; margin: 0 auto 24px auto; display: flex; gap: 12px; flex-wrap: wrap; padding: 0 20px;
         }
+
+        .input-wrapper { position: relative; flex-grow: 1; min-width: 250px; }
+        .input-wrapper i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         .glass-input {
-            flex-grow: 1;
-            padding: 14px 24px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
-            min-width: 200px;
+            width: 100%; padding: 14px 20px 14px 45px; border-radius: 16px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border); color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.2s;
         }
-        
-        .glass-input:focus {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: var(--glass-border-highlight);
-        }
+        .glass-input:focus { background: rgba(255, 255, 255, 0.06); border-color: var(--accent); }
 
         .glass-select {
-            padding: 14px 24px;
-            border-radius: 16px;
-            background: #0f172a;
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            font-size: 0.95rem;
-            cursor: pointer;
-            outline: none;
-            min-width: 220px;
+            padding: 14px 20px; border-radius: 16px; background: #0f172a; border: 1px solid var(--glass-border);
+            color: var(--text-main); font-size: 0.95rem; cursor: pointer; outline: none; min-width: 180px; flex-grow: 1;
         }
 
-        /* Grid */
+        /* Party Mode Button */
+        .party-btn {
+            padding: 14px 24px; border-radius: 16px; background: linear-gradient(135deg, #a855f7, #f472b6);
+            border: none; color: white; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+            transition: opacity 0.2s; outline: none; display: flex; align-items: center; gap: 8px;
+        }
+        .party-btn:hover { opacity: 0.9; }
+        .party-btn:active { opacity: 0.7; }
+
+        /* Cards Grid */
         .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; padding: 0 20px;
         }
 
+        /* Card Optimization */
         .student-card {
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            border-radius: 20px;
+            padding: 22px; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px;
+            animation: fadeUp 0.4s ease forwards; opacity: 0;
+            transform: translateZ(0);
+            content-visibility: auto; /* Optimization for off-screen cards */
         }
 
-        /* Efek Khusus Untuk yang Ulang Tahun Hari Ini */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Efek Bday */
         .card-bday-today {
-            background: linear-gradient(145deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.08));
-            border: 1px solid rgba(245, 158, 11, 0.5);
-            border-top: 1px solid rgba(245, 158, 11, 0.7);
-            border-left: 1px solid rgba(245, 158, 11, 0.7);
-            animation: pulse-glow 2s infinite alternate;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.4); 
         }
 
-        @keyframes pulse-glow {
-            from { box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
-            to { box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+        .card-bday-today::before {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.15), transparent);
+            transform: skewX(-20deg); animation: shimmer 3s infinite;
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px dashed var(--glass-border-highlight);
-            padding-bottom: 16px;
-        }
+        @keyframes shimmer { 100% { left: 200%; } }
 
-        .name-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed var(--glass-border-highlight); padding-bottom: 16px; }
+        .name-wrapper { display: flex; align-items: center; gap: 12px; }
 
         .no-badge {
-            font-size: 0.8rem;
-            color: var(--text-main);
-            font-weight: 700;
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
-            width: 30px; height: 30px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 10px;
+            font-size: 0.85rem; color: #0f172a; font-weight: 800; background: var(--text-main);
+            width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+            border-radius: 10px; flex-shrink: 0;
         }
 
-        .student-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-transform: capitalize;
-            letter-spacing: 0.3px;
+        .card-bday-today .no-badge { background: linear-gradient(135deg, #fcd34d, #f59e0b); color: #78350f; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+
+        .student-name { font-size: 1.2rem; font-weight: 700; text-transform: capitalize; letter-spacing: 0.2px;}
+        
+        .badges-wrapper { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+
+        /* Awesome Badges */
+        .tag-badge {
+            font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; 
+            display: flex; align-items: center; gap: 6px; font-weight: 700;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-muted);
         }
         
-        .badges-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-        }
-
-        .zodiac-badge, .shio-badge {
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .info-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        .info-value {
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        .info-value.highlight {
-            color: var(--accent);
-        }
-
-        .progress-container {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #38bdf8, #818cf8);
-            border-radius: 10px;
-            transition: width 1s ease-in-out;
-        }
-
-        .countdown-row {
-            background: rgba(0,0,0,0.3);
-            padding: 14px 16px;
-            border-radius: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            border: 1px solid rgba(255,255,255,0.02);
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .tag-badge.zodiak { background: linear-gradient(90deg, rgba(168, 85, 247, 0.15), rgba(244, 114, 182, 0.15)); border-color: rgba(244, 114, 182, 0.3); color: #fdf2f8; }
+        .tag-badge.zodiak i { color: var(--pink); }
         
-        .countdown-val {
-            font-weight: 700;
-            color: var(--text-main);
-        }
+        .tag-badge.shio { background: linear-gradient(90deg, rgba(52, 211, 153, 0.1), rgba(56, 189, 248, 0.1)); border-color: rgba(56, 189, 248, 0.3); color: #f0f9ff; }
+        .tag-badge.shio i { color: var(--accent); }
 
-        .soon-badge {
-            background: rgba(52, 211, 153, 0.15);
-            color: var(--green);
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-        }
+        .tag-badge.gen { background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1)); border-color: rgba(245, 158, 11, 0.3); color: #fffbeb; }
+        .tag-badge.gen i { color: var(--orange); }
 
-        .today-badge {
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 800;
-            border: none;
-            letter-spacing: 0.5px;
-        }
+        /* Enhanced Info Grid (Sekarang 6 Kotak) */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .info-item { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.02);}
+        
+        .info-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+        .info-label i { color: var(--text-muted); opacity: 0.7; }
 
-        .missing-data {
-            color: var(--text-muted);
-            font-style: italic;
-            font-size: 0.9rem;
-            text-align: center;
-            padding: 20px 0;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-        }
+        .info-value { font-size: 0.95rem; font-weight: 700; }
+        .info-value.highlight { color: var(--accent); }
+        .info-value.mini { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+        
+        .bstone-color { display: inline-block; width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 5px currentColor; margin-right: 4px;}
+
+        /* Progress Bar Modern */
+        .progress-wrapper { margin-top: auto; background: rgba(0,0,0,0.25); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.02); position: relative; }
+        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .countdown-val { font-weight: 800; color: var(--text-main); font-size: 1.05rem;}
+
+        .progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; overflow: hidden; position: relative; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); border-radius: 10px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .today-badge { background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; padding: 4px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; border: none; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px; }
+        .soon-badge { background: rgba(52, 211, 153, 0.1); color: var(--green); padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(52, 211, 153, 0.2); display: inline-flex; align-items: center; gap: 4px; }
+
+        .missing-data { color: var(--text-muted); font-style: italic; font-size: 0.9rem; text-align: center; padding: 30px 0; background: rgba(255,255,255,0.02); border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .missing-data i { font-size: 1.8rem; opacity: 0.4; }
 
         @media (max-width: 768px) {
-            .controls-container { flex-direction: column; }
-            .glass-select { width: 100%; }
+            .controls-container { flex-direction: column; } .glass-select, .input-wrapper, .party-btn { width: 100%; justify-content: center;}
+            .info-grid { grid-template-columns: 1fr 1fr; } .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
+            .spotlight-card { flex-direction: column; text-align: center; } .spotlight-info { align-items: center; }
+            .container { grid-template-columns: 1fr; }
         }
+        @media (max-width: 480px) { .dashboard-stats { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <div class="liquid-blob blob-1"></div>
-    <div class="liquid-blob blob-2"></div>
+    <div class="bg-glow"></div>
 
-    <header>
-        <h1>ULTAH X-10 🥳</h1>
-        <div id="current-time">Memuat waktu...</div>
-    </header>
+    <div class="header-content">
+        <h1><i class="fa-solid fa-cake-candles" style="color: var(--pink);"></i> Database X-10</h1>
+        <div id="current-time">
+            <i class="fa-regular fa-clock"></i> <span id="clock-text">Memuat Waktu...</span>
+        </div>
+    </div>
 
-    <!-- Dashboard Statistik Kelas -->
+    <!-- Spotlight Section -->
+    <div class="spotlight-container" id="spotlight-container">
+        <div class="spotlight-card glass-panel">
+            <div class="spotlight-info">
+                <span class="spotlight-label"><i class="fa-solid fa-star"></i> Bintang Utama Terdekat</span>
+                <div class="spotlight-name" id="spotlight-name">Memuat...</div>
+                <div class="spotlight-desc" id="spotlight-desc">Memuat info...</div>
+            </div>
+            <div style="z-index: 1;">
+                <div id="spotlight-badge"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Statistik Ekstensif -->
     <div class="dashboard-stats" id="dashboard-stats">
         <div class="stat-box glass-panel">
-            <div class="stat-icon">🎂</div>
+            <div class="stat-icon pink"><i class="fa-solid fa-calendar-star"></i></div>
             <div class="stat-info">
-                <span class="stat-title">Bulan Ini</span>
+                <span class="stat-title">Ultah Bulan Ini</span>
                 <span class="stat-value highlight" id="stat-bulan-ini">0 Orang</span>
             </div>
         </div>
         <div class="stat-box glass-panel">
-            <div class="stat-icon">👑</div>
+            <div class="stat-icon orange"><i class="fa-solid fa-crown"></i></div>
             <div class="stat-info">
-                <span class="stat-title">Paling Tua (Sesepuh)</span>
+                <span class="stat-title">Sesepuh (Tertua)</span>
                 <span class="stat-value" id="stat-tertua">-</span>
             </div>
         </div>
         <div class="stat-box glass-panel">
-            <div class="stat-icon">👶</div>
+            <div class="stat-icon green"><i class="fa-solid fa-seedling"></i></div>
             <div class="stat-info">
-                <span class="stat-title">Paling Muda (Bocil)</span>
+                <span class="stat-title">Bocil (Termuda)</span>
                 <span class="stat-value" id="stat-termuda">-</span>
             </div>
         </div>
         <div class="stat-box glass-panel">
-            <div class="stat-icon">📊</div>
+            <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
             <div class="stat-info">
-                <span class="stat-title">Rata-Rata Umur</span>
+                <span class="stat-title">Rata-Rata Usia</span>
                 <span class="stat-value" id="stat-ratarata">-</span>
+            </div>
+        </div>
+        <div class="stat-box glass-panel">
+            <div class="stat-icon red"><i class="fa-solid fa-fire"></i></div>
+            <div class="stat-info">
+                <span class="stat-title">Bulan Teramai</span>
+                <span class="stat-value" id="stat-ramai">-</span>
+            </div>
+        </div>
+        <div class="stat-box glass-panel">
+            <div class="stat-icon gold"><i class="fa-solid fa-id-card"></i></div>
+            <div class="stat-info">
+                <span class="stat-title">KTP Ready (17+)</span>
+                <span class="stat-value" id="stat-ktp">0 Orang</span>
             </div>
         </div>
     </div>
 
     <!-- Controls -->
     <div class="controls-container">
-        <input type="text" id="searchInput" class="glass-input" placeholder="🔍 Cari nama temanmu..." onkeyup="renderCards()">
-        <select id="sortSelect" class="glass-select" onchange="renderCards()">
-            <option value="no">🔢 Urutkan: No. Absen (Default)</option>
-            <option value="terdekat">🎯 Urutkan: Paling Dekat Ultah</option>
-            <option value="nama">🔤 Urutkan: Nama (A-Z)</option>
-            <option value="umur_tua">👴 Urutkan: Umur (Tua ke Muda)</option>
-            <option value="umur_muda">👶 Urutkan: Umur (Muda ke Tua)</option>
+        <div class="input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" class="glass-input" placeholder="Cari nama teman..." onkeyup="renderCards()">
+        </div>
+        
+        <select id="filterMonth" class="glass-select" onchange="renderCards()">
+            <option value="all">&#xf073; Filter: Semua Bulan</option>
+            <option value="0">Januari</option>
+            <option value="1">Februari</option>
+            <option value="2">Maret</option>
+            <option value="3">April</option>
+            <option value="4">Mei</option>
+            <option value="5">Juni</option>
+            <option value="6">Juli</option>
+            <option value="7">Agustus</option>
+            <option value="8">September</option>
+            <option value="9">Oktober</option>
+            <option value="10">November</option>
+            <option value="11">Desember</option>
         </select>
+
+        <select id="sortSelect" class="glass-select" onchange="renderCards()">
+            <option value="no">&#xf162; Urutan: No. Absen</option>
+            <option value="terdekat">&#xf14a; Urutan: Terdekat</option>
+            <option value="nama">&#xf15d; Urutan: Nama (A-Z)</option>
+            <option value="umur_tua">&#xf160; Urutan: Paling Tua</option>
+            <option value="umur_muda">&#xf161; Urutan: Paling Muda</option>
+        </select>
+
+        <button class="party-btn" onclick="fireParty()"><i class="fa-solid fa-wand-magic-sparkles"></i> Party Mode</button>
     </div>
 
     <div class="container" id="cards-container">
-        <!-- Cards injected via JS -->
+        <!-- Cards -->
     </div>
 
     <script>
-        // Mendapatkan tanggal hari ini
+        document.querySelectorAll('select.glass-select').forEach(el => { el.style.fontFamily = "'Plus Jakarta Sans', 'FontAwesome', sans-serif"; });
+
         const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonthStr = String(today.getMonth() + 1).padStart(2, '0');
-        const currentDayStr = String(today.getDate()).padStart(2, '0');
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
         
-        // Data Siswa - UPDATE Diny's DOB ke Hari Ini Tahun 2011
         const dataSiswa = [
             { no: 1, nama: "akmal", dob: "2010-06-08" },
             { no: 2, nama: "ali topan", dob: "2010-09-18" },
@@ -464,25 +420,26 @@
             { no: 35, nama: "willi", dob: "2010-08-06" }
         ];
 
+        // Awesome Badges System
         function getZodiac(dateString) {
             if(!dateString) return null;
             const d = new Date(dateString);
-            const day = d.getDate();
-            const month = d.getMonth() + 1;
+            const day = d.getDate(), month = d.getMonth() + 1;
+            let z = "", emoji = "";
+            if ((month == 1 && day <= 19) || (month == 12 && day >= 22)) { z = "Capricorn"; emoji = "♑"; }
+            else if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) { z = "Aquarius"; emoji = "♒"; }
+            else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) { z = "Pisces"; emoji = "♓"; }
+            else if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) { z = "Aries"; emoji = "♈"; }
+            else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) { z = "Taurus"; emoji = "♉"; }
+            else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) { z = "Gemini"; emoji = "♊"; }
+            else if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) { z = "Cancer"; emoji = "♋"; }
+            else if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) { z = "Leo"; emoji = "♌"; }
+            else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) { z = "Virgo"; emoji = "♍"; }
+            else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) { z = "Libra"; emoji = "♎"; }
+            else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) { z = "Scorpio"; emoji = "♏"; }
+            else { z = "Sagittarius"; emoji = "♐"; }
 
-            if ((month == 1 && day <= 19) || (month == 12 && day >= 22)) return { name: "Capricorn", emoji: "♑" };
-            if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return { name: "Aquarius", emoji: "♒" };
-            if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return { name: "Pisces", emoji: "♓" };
-            if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return { name: "Aries", emoji: "♈" };
-            if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return { name: "Taurus", emoji: "♉" };
-            if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return { name: "Gemini", emoji: "♊" };
-            if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return { name: "Cancer", emoji: "♋" };
-            if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return { name: "Leo", emoji: "♌" };
-            if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return { name: "Virgo", emoji: "♍" };
-            if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return { name: "Libra", emoji: "♎" };
-            if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) return { name: "Scorpio", emoji: "♏" };
-            if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) return { name: "Sagittarius", emoji: "♐" };
-            return null;
+            return { name: z, emoji: emoji };
         }
 
         function getShio(year) {
@@ -495,115 +452,168 @@
             ];
             return shioList[(year - 4) % 12];
         }
+        
+        function getGeneration(year) {
+            if (!year) return null;
+            if (year <= 2010) return "Gen Z";
+            return "Gen Alpha";
+        }
+
+        // FITUR BARU 1: Batu Kelahiran (Birthstone)
+        function getBirthstone(monthIndex) {
+            const stones = [
+                { name: "Garnet", color: "#b91c1c" }, { name: "Amethyst", color: "#7e22ce" },
+                { name: "Aquamarine", color: "#7dd3fc" }, { name: "Diamond", color: "#f8fafc" },
+                { name: "Emerald", color: "#10b981" }, { name: "Pearl", color: "#fef08a" },
+                { name: "Ruby", color: "#ef4444" }, { name: "Peridot", color: "#84cc16" },
+                { name: "Sapphire", color: "#1d4ed8" }, { name: "Opal", color: "#fbcfe8" },
+                { name: "Topaz", color: "#f59e0b" }, { name: "Turquoise", color: "#06b6d4" }
+            ];
+            return stones[monthIndex];
+        }
+
+        // FITUR BARU 2: Fase Usia (Depkes RI)
+        function getFaseUsia(years) {
+            if (years < 12) return "Kanak-Kanak";
+            if (years <= 16) return "Remaja Awal";
+            if (years <= 25) return "Remaja Akhir";
+            return "Dewasa";
+        }
+
+        function getMusim(monthIndex) {
+            if (monthIndex >= 3 && monthIndex <= 8) return { name: "Kemarau", emoji: "☀️" };
+            return { name: "Hujan", emoji: "🌧️" };
+        }
+
+        function getHariLahir(dateString) {
+            if(!dateString) return null;
+            return dayNames[new Date(dateString).getDay()];
+        }
 
         function formatDate(dateString) {
-            const options = { day: '2-digit', month: 'long', year: 'numeric' };
-            return new Date(dateString).toLocaleDateString('id-ID', options);
+            return new Date(dateString).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
         }
 
         function calculateAgeStats(dobString, todayDate) {
             if (!dobString) return null;
-            
             const dob = new Date(dobString);
+            
+            const diffTime = todayDate.getTime() - dob.getTime();
+            const totalDaysLived = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
             let years = todayDate.getFullYear() - dob.getFullYear();
             let months = todayDate.getMonth() - dob.getMonth();
             let days = todayDate.getDate() - dob.getDate();
 
-            if (days < 0) {
-                months--;
-                const prevMonth = new Date(todayDate.getFullYear(), todayDate.getMonth(), 0);
-                days += prevMonth.getDate();
-            }
-            if (months < 0) {
-                years--;
-                months += 12;
-            }
+            if (days < 0) { months--; days += new Date(todayDate.getFullYear(), todayDate.getMonth(), 0).getDate(); }
+            if (months < 0) { years--; months += 12; }
 
             let nextBday = new Date(todayDate.getFullYear(), dob.getMonth(), dob.getDate());
             const todayDateOnly = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate());
             
-            if (todayDateOnly.getTime() > nextBday.getTime()) {
-                nextBday.setFullYear(todayDate.getFullYear() + 1);
-            }
+            if (todayDateOnly.getTime() > nextBday.getTime()) nextBday.setFullYear(todayDate.getFullYear() + 1);
             
             const diffBdayTime = nextBday.getTime() - todayDateOnly.getTime();
             const daysToNextBday = Math.ceil(diffBdayTime / (1000 * 60 * 60 * 24));
-            
-            // Hitung persentase progress menuju ultah (asumsi 365 hari/tahun)
             const progress = Math.max(0, Math.min(100, ((365 - daysToNextBday) / 365) * 100));
 
-            return { years, months, days, daysToNextBday, progress, yearOfBirth: dob.getFullYear() };
+            return { years, months, days, daysToNextBday, progress, yearOfBirth: dob.getFullYear(), totalDaysLived, bdayMonth: dob.getMonth() };
         }
 
-        function updateClassDashboard(todayDate) {
-            let currentMonthCount = 0;
-            const currentMonth = todayDate.getMonth();
-            
-            const validStudents = dataSiswa.filter(s => s.dob);
+        function fireParty() {
+            const duration = 3000; const end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#38bdf8', '#fbbf24', '#f472b6'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#34d399', '#a855f7', '#fbbf24'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        function updateDashboards(displayData) {
+            const validStudents = displayData.filter(s => s.stats);
             if (validStudents.length === 0) return;
 
-            let oldest = validStudents[0];
-            let youngest = validStudents[0];
-            let totalAgeInMs = 0;
-            const todayMs = todayDate.getTime();
+            let oldest = validStudents[0], youngest = validStudents[0], totalAgeInMs = 0, ktpReadyCount = 0;
+            const currentMonth = today.getMonth();
+            let currentMonthCount = 0;
+            const monthCounts = new Array(12).fill(0);
+            let absoluteNext = validStudents[0]; 
 
             validStudents.forEach(s => {
-                const bdayDate = new Date(s.dob);
-                const bdayMs = bdayDate.getTime();
+                const bdayMs = new Date(s.dob).getTime();
+                const bdayMonth = s.stats.bdayMonth;
                 
-                if(bdayDate.getMonth() === currentMonth) currentMonthCount++;
-
+                monthCounts[bdayMonth]++;
+                if(bdayMonth === currentMonth) currentMonthCount++;
                 if (bdayMs < new Date(oldest.dob).getTime()) oldest = s;
                 if (bdayMs > new Date(youngest.dob).getTime()) youngest = s;
-
-                totalAgeInMs += (todayMs - bdayMs);
+                if (s.stats.years >= 17) ktpReadyCount++;
+                
+                totalAgeInMs += (today.getTime() - bdayMs);
+                if(s.stats.daysToNextBday < absoluteNext.stats.daysToNextBday) absoluteNext = s;
             });
 
+            // Spotlight
+            const spotlightContainer = document.getElementById('spotlight-container');
+            if (absoluteNext) {
+                spotlightContainer.style.display = 'block';
+                document.getElementById('spotlight-name').innerText = absoluteNext.nama;
+                let nextAgeStr = absoluteNext.stats.daysToNextBday === 0 ? absoluteNext.stats.years : absoluteNext.stats.years + 1;
+                
+                if (absoluteNext.stats.daysToNextBday === 0) {
+                    document.getElementById('spotlight-desc').innerText = `Sedang berulang tahun ke-${nextAgeStr} hari ini! 🎉`;
+                    document.getElementById('spotlight-badge').innerHTML = '<span class="today-badge" style="font-size:1rem; padding: 10px 20px;"><i class="fa-solid fa-fire"></i> HARI INI!</span>';
+                } else {
+                    document.getElementById('spotlight-desc').innerText = `Akan berulang tahun ke-${nextAgeStr} dalam waktu dekat.`;
+                    document.getElementById('spotlight-badge').innerHTML = `<div style="text-align:right"><span style="font-size:2rem; font-weight:800; color:var(--accent);">${absoluteNext.stats.daysToNextBday}</span><br><span style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; font-weight:700;">Hari Lagi</span></div>`;
+                }
+            } else { spotlightContainer.style.display = 'none'; }
+
+            // Stats
+            const maxBdayCount = Math.max(...monthCounts);
+            const crowdedMonthIndex = monthCounts.indexOf(maxBdayCount);
             const avgAgeInMs = totalAgeInMs / validStudents.length;
             const avgYears = Math.floor(avgAgeInMs / (1000 * 60 * 60 * 24 * 365.25));
             const avgMonths = Math.floor((avgAgeInMs % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
+            
+            const ktpPercentage = Math.round((ktpReadyCount / validStudents.length) * 100);
 
             document.getElementById('stat-bulan-ini').innerText = `${currentMonthCount} Orang`;
-            document.getElementById('stat-tertua').innerHTML = `${oldest.nama} <span style="font-size:0.75rem; color:#94a3b8">(${oldest.dob.substring(0,4)})</span>`;
-            document.getElementById('stat-termuda').innerHTML = `${youngest.nama} <span style="font-size:0.75rem; color:#94a3b8">(${youngest.dob.substring(0,4)})</span>`;
+            document.getElementById('stat-tertua').innerHTML = `${oldest.nama} <span style="font-size:0.75rem; color:#94a3b8; font-weight:500;">(${oldest.dob.substring(0,4)})</span>`;
+            document.getElementById('stat-termuda').innerHTML = `${youngest.nama} <span style="font-size:0.75rem; color:#94a3b8; font-weight:500;">(${youngest.dob.substring(0,4)})</span>`;
             document.getElementById('stat-ratarata').innerText = `${avgYears} Thn ${avgMonths} Bln`;
+            document.getElementById('stat-ramai').innerText = `${monthNames[crowdedMonthIndex]} (${maxBdayCount} org)`;
+            document.getElementById('stat-ktp').innerText = `${ktpReadyCount} Org (${ktpPercentage}%)`;
         }
 
         let confettiFired = false;
 
         function renderCards() {
             const container = document.getElementById('cards-container');
-            container.innerHTML = '';
+            container.innerHTML = ''; // Optimized replace
             
-            const todayDate = new Date();
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
+            const filterMonth = document.getElementById('filterMonth').value;
 
             let displayData = dataSiswa.map(person => {
-                const stats = calculateAgeStats(person.dob, todayDate);
+                const stats = calculateAgeStats(person.dob, today);
                 const zodiak = getZodiac(person.dob);
                 const shio = stats ? getShio(stats.yearOfBirth) : null;
+                const hariLahir = getHariLahir(person.dob);
                 const isToday = stats && stats.daysToNextBday === 0;
-                return { ...person, stats, zodiak, shio, isToday };
+                return { ...person, stats, zodiak, shio, hariLahir, isToday };
             });
 
-            // Trigger Confetti jika ada yang ultah hari ini (hanya sekali)
-            const hasBdayToday = displayData.some(p => p.isToday);
-            if(hasBdayToday && !confettiFired) {
-                setTimeout(() => {
-                    confetti({
-                        particleCount: 150,
-                        spread: 80,
-                        origin: { y: 0.6 },
-                        colors: ['#38bdf8', '#fbbf24', '#f472b6', '#34d399']
-                    });
-                }, 500);
+            updateDashboards(displayData);
+
+            if(displayData.some(p => p.isToday) && !confettiFired) {
+                setTimeout(() => { fireParty(); }, 500);
                 confettiFired = true;
             }
 
-            if(searchQuery) {
-                displayData = displayData.filter(p => p.nama.toLowerCase().includes(searchQuery));
-            }
+            if(searchQuery) displayData = displayData.filter(p => p.nama.toLowerCase().includes(searchQuery));
+            if(filterMonth !== 'all') displayData = displayData.filter(p => p.stats && p.stats.bdayMonth == parseInt(filterMonth));
 
             displayData.sort((a, b) => {
                 if (a.isToday && !b.isToday) return -1;
@@ -611,87 +621,96 @@
 
                 if(sortBy === 'nama') return a.nama.localeCompare(b.nama);
                 if(sortBy === 'terdekat') {
-                    if(!a.stats) return 1;
-                    if(!b.stats) return -1;
+                    if(!a.stats) return 1; if(!b.stats) return -1;
                     return a.stats.daysToNextBday - b.stats.daysToNextBday;
                 }
                 if(sortBy === 'umur_tua') {
-                    if(!a.dob) return 1;
-                    if(!b.dob) return -1;
+                    if(!a.dob) return 1; if(!b.dob) return -1;
                     return new Date(a.dob).getTime() - new Date(b.dob).getTime();
                 }
                 if(sortBy === 'umur_muda') {
-                    if(!a.dob) return 1;
-                    if(!b.dob) return -1;
+                    if(!a.dob) return 1; if(!b.dob) return -1;
                     return new Date(b.dob).getTime() - new Date(a.dob).getTime();
                 }
-                return a.no - b.no; // Default (No. Absen)
+                return a.no - b.no;
             });
 
             const fragment = document.createDocumentFragment();
 
-            displayData.forEach((person) => {
+            displayData.forEach((person, index) => {
                 const card = document.createElement('div');
                 card.className = `student-card glass-panel ${person.isToday ? 'card-bday-today' : ''}`;
+                card.style.animationDelay = `${index * 0.03}s`; // Faster cascade
                 
                 let contentHTML = '';
 
                 if (person.stats) {
                     let bdayBadge = '';
-                    if (person.stats.daysToNextBday === 0) {
-                        bdayBadge = '<span class="today-badge">🎉 HARI INI!</span>';
-                    } else if (person.stats.daysToNextBday <= 30) {
-                        bdayBadge = '<span class="soon-badge">⏳ Sebentar Lagi</span>';
-                    }
+                    if (person.stats.daysToNextBday === 0) bdayBadge = '<span class="today-badge"><i class="fa-solid fa-fire"></i> HARI INI!</span>';
+                    else if (person.stats.daysToNextBday <= 30) bdayBadge = '<span class="soon-badge"><i class="fa-solid fa-bell"></i> Sebentar Lagi</span>';
 
-                    // Tambahan Fitur: Sweet 17/KTP Indicator
-                    let nextAge = person.stats.years + 1;
-                    if(person.stats.daysToNextBday === 0) nextAge = person.stats.years; 
+                    let nextAge = person.stats.daysToNextBday === 0 ? person.stats.years : person.stats.years + 1;
                     let milestone = '';
-                    if (nextAge === 17 && person.stats.daysToNextBday !== 0) {
-                        milestone = ' <span style="color:#f472b6; font-size:0.75rem;">(Sweet 17 🪪)</span>';
-                    } else if (person.stats.years === 17 && person.stats.daysToNextBday === 0) {
-                        milestone = ' <span style="color:#f472b6; font-size:0.75rem;">(Sudah Punya KTP! 🪪)</span>';
-                    }
+                    if (nextAge === 17 && person.stats.daysToNextBday !== 0) milestone = ' <span style="color:var(--pink); font-size:0.75rem;"><i class="fa-solid fa-id-card"></i> Sweet 17</span>';
+                    else if (person.stats.years >= 17) milestone = ' <span style="color:var(--orange); font-size:0.75rem;"><i class="fa-solid fa-id-card"></i> KTP Ready</span>';
+
+                    const bstone = getBirthstone(person.stats.bdayMonth);
 
                     contentHTML = `
                         <div class="info-grid">
                             <div class="info-item">
-                                <span class="info-label">Tgl Lahir</span>
-                                <span class="info-value">${formatDate(person.dob)}</span>
+                                <span class="info-label"><i class="fa-regular fa-calendar-days"></i> Tgl Lahir</span>
+                                <span class="info-value mini">${formatDate(person.dob)}</span>
                             </div>
                             <div class="info-item">
-                                <span class="info-label">Usia Sekarang</span>
-                                <span class="info-value highlight">${person.stats.years} Thn, ${person.stats.months} Bln</span>
+                                <span class="info-label"><i class="fa-solid fa-calendar-day"></i> Hari Lahir</span>
+                                <span class="info-value highlight">${person.hariLahir}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label"><i class="fa-solid fa-cloud-sun-rain"></i> Musim Lahir</span>
+                                <span class="info-value">${getMusim(person.stats.bdayMonth).emoji} ${getMusim(person.stats.bdayMonth).name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label"><i class="fa-regular fa-gem"></i> Batu Lahir</span>
+                                <span class="info-value"><span class="bstone-color" style="background:${bstone.color}; color:${bstone.color};"></span> ${bstone.name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label"><i class="fa-solid fa-stopwatch"></i> Usia Aktif</span>
+                                <span class="info-value">${person.stats.years} Th, ${person.stats.months} Bln</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label"><i class="fa-solid fa-seedling"></i> Fase Usia</span>
+                                <span class="info-value mini">${getFaseUsia(person.stats.years)}</span>
                             </div>
                         </div>
-                        <div class="countdown-row">
-                            <div style="flex-grow:1;">
-                                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
-                                    <div class="info-item" style="gap:2px;">
-                                        <span class="info-label">Ultah Ke-${nextAge}${milestone}</span>
-                                        <span class="countdown-val">${person.stats.daysToNextBday} Hari lagi</span>
-                                    </div>
-                                    ${bdayBadge}
+                        <div class="progress-wrapper">
+                            <div class="progress-header">
+                                <div class="info-item" style="background:transparent; padding:0; border:none; gap:2px;">
+                                    <span class="info-label"><i class="fa-solid fa-cake-candles"></i> Ultah Ke-${nextAge}${milestone}</span>
+                                    <span class="countdown-val">${person.stats.daysToNextBday} Hari lagi</span>
                                 </div>
-                                <div class="progress-container">
-                                    <div class="progress-bar" style="width: ${person.stats.progress}%"></div>
-                                </div>
+                                ${bdayBadge}
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${person.stats.progress}%"></div>
                             </div>
                         </div>
                     `;
                 } else {
                     contentHTML = `
                         <div class="missing-data">
-                            ⚠️ Data tanggal lahir belum tersedia
+                            <i class="fa-solid fa-user-ninja"></i>
+                            Misterius! Data tgl lahir belum ada.
                         </div>
                     `;
                 }
 
+                // Coded Awesome Font Badges
                 const badgesHTML = person.zodiak ? `
                     <div class="badges-wrapper">
-                        <div class="zodiac-badge" title="Zodiak Bintang">${person.zodiak.emoji} ${person.zodiak.name}</div>
-                        ${person.shio ? `<div class="shio-badge" title="Shio (Chinese Zodiac)">${person.shio.emoji} Shio ${person.shio.name}</div>` : ''}
+                        <div class="tag-badge zodiak" title="Zodiak"><i class="fa-solid fa-moon"></i> ${person.zodiak.emoji} ${person.zodiak.name}</div>
+                        ${person.shio ? `<div class="tag-badge shio" title="Shio"><i class="fa-solid fa-yin-yang"></i> ${person.shio.emoji} ${person.shio.name}</div>` : ''}
+                        ${person.stats ? `<div class="tag-badge gen" title="Generasi"><i class="fa-solid fa-user-astronaut"></i> ${getGeneration(person.stats.yearOfBirth)}</div>` : ''}
                     </div>
                 ` : '';
 
@@ -716,14 +735,14 @@
             const now = new Date();
             if (now.getMinutes() !== lastMinute) {
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
-                document.getElementById('current-time').innerText = now.toLocaleDateString('id-ID', options).replace(/\./g, ':');
+                document.getElementById('clock-text').innerText = now.toLocaleDateString('id-ID', options).replace(/\./g, ':');
                 lastMinute = now.getMinutes();
             }
         }
 
         // Init
         document.getElementById('sortSelect').value = 'no'; 
-        updateClassDashboard(today);
+        document.getElementById('filterMonth').value = 'all';
         renderCards();
         updateClock();
         setInterval(updateClock, 1000);
